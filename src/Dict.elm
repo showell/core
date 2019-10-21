@@ -1,10 +1,11 @@
-module Dict exposing
+module Data.Dict exposing
   ( Dict
   , empty, singleton, insert, update, remove
   , isEmpty, member, get, size
   , keys, values, toList, fromList
   , map, foldl, foldr, filter, partition
   , union, intersect, diff, merge
+  , InternalDictRepr(..), internalRepresentationOfTheUnderlyingRedBlackTreeForTestingPurposes
   )
 
 {-| A dictionary mapping unique keys to values. The keys can be any comparable
@@ -608,3 +609,29 @@ toList dict =
 fromList : List (comparable,v) -> Dict comparable v
 fromList assocs =
   List.foldl (\(key,value) dict -> insert key value dict) empty assocs
+
+
+type InternalDictRepr k v
+    = InternalDictRepr (Maybe ( String, ( k, v ), ( InternalDictRepr k v, InternalDictRepr k v ) ))
+
+
+internalRepresentationOfTheUnderlyingRedBlackTreeForTestingPurposes : Dict k v -> InternalDictRepr k v
+internalRepresentationOfTheUnderlyingRedBlackTreeForTestingPurposes d =
+    case d of
+        RBNode_elm_builtin color k v left right ->
+            let
+                c =
+                    case color of
+                        Red ->
+                            "R"
+
+                        Black ->
+                            "B"
+
+                repr =
+                    internalRepresentationOfTheUnderlyingRedBlackTreeForTestingPurposes
+            in
+            InternalDictRepr (Just ( c, ( k, v ), ( repr left, repr right ) ))
+
+        RBEmpty_elm_builtin ->
+            InternalDictRepr Nothing
